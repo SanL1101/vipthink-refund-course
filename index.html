@@ -111,6 +111,15 @@ body {
   font-size: 12px; color: #64748b;
 }
 
+/* 移动端侧边栏关闭按钮（仅移动端显示） */
+.sidebar-close-btn {
+  display: none;
+  position: absolute; top: 8px; right: 12px;
+  background: none; border: none; color: #94a3b8;
+  font-size: 20px; cursor: pointer; z-index: 10;
+  padding: 8px; line-height: 1;
+}
+
 /* === Study Timer === */
 .study-timer {
   padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -506,30 +515,153 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
 /* === Mobile Responsive === */
 .mobile-header {
   display: none; background: var(--sidebar-bg); color: #fff;
-  padding: 12px 16px; align-items: center; gap: 12px;
+  padding: 10px 16px; align-items: center; gap: 10px;
   position: sticky; top: 0; z-index: 50;
+  min-height: 48px;
+}
+.mobile-header .mh-title {
+  flex: 1; font-weight: 700; font-size: 14px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mobile-header .mh-btn {
+  background: none; border: none; color: #fff; font-size: 20px;
+  cursor: pointer; padding: 4px 8px; line-height: 1;
+  min-width: 36px; min-height: 36px; display: flex; align-items: center; justify-content: center;
+}
+.mobile-progress-bar {
+  display: none; height: 3px; background: rgba(255,255,255,0.15);
+  position: sticky; top: 48px; z-index: 49;
+}
+.mobile-progress-bar .mpb-fill {
+  height: 100%; background: var(--primary-light); transition: width 0.5s ease; width: 0%;
 }
 .sidebar-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.5); z-index: 99;
 }
 
-@media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
+/* ===== 移动端 + 平板 (≤1024px) ===== */
+@media (max-width: 1024px) {
+  body { flex-direction: column; }
+
+  /* 侧边栏 - 默认隐藏，滑出显示 */
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px; min-width: 280px;
+    transition: transform 0.3s ease;
+  }
+  .sidebar.open { transform: translateX(0); z-index: 110; }
   .sidebar-overlay.show { display: block; }
+  .sidebar-close-btn { display: block; }
+
+  /* 移动端顶部导航 */
   .mobile-header { display: flex; }
-  .main { margin-left: 0; padding: 20px 16px; }
-  .section-header h1 { font-size: 22px; }
-  .card { padding: 20px; }
+  .mobile-progress-bar { display: block; }
+
+  /* 主内容区全宽 */
+  .main {
+    margin-left: 0 !important;
+    padding: 16px 14px 80px;
+    max-width: 100%;
+  }
+
+  /* === 排版缩放 === */
+  .section-header h1 { font-size: 20px; }
+  .section-header .duration { font-size: 12px; }
+  .section-badge { font-size: 11px; padding: 3px 10px; }
+  .card { padding: 16px; border-radius: 10px; }
+  .card-title { font-size: 16px; }
+  .script-block { padding: 16px; font-size: 13px; }
+
+  /* === 网格全部竖排 === */
   .flow-steps { flex-direction: column; }
   .flow-arrow { transform: rotate(90deg); }
   .strategy-grid { flex-direction: column; }
   .lifeline-cards { flex-direction: column; }
   .callout-grid { flex-direction: column; }
   .flash-cards { flex-direction: column; }
-  .section-nav-buttons { flex-direction: column; gap: 12px; }
+  .eval-dimensions { flex-direction: column; }
+
+  .flow-step, .strategy-card, .lifeline-card,
+  .callout-item, .flash-card, .eval-dim {
+    min-width: auto;
+  }
+
+  /* === 视频满宽 === */
+  video { border-radius: 8px; }
+
+  /* === 选项触摸优化 (≥44px) === */
+  .quiz-option {
+    padding: 14px 12px;
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .quiz-option-label {
+    width: 26px; height: 26px; min-width: 26px;
+    font-size: 12px;
+  }
+  .quiz-question { font-size: 14px; }
+
+  /* === AI对话 === */
+  .dialogue-container { padding: 16px; }
+  .reply-input { min-height: 80px; font-size: 13px; padding: 12px; }
+  .dialogue-actions { flex-direction: column; }
+  .dialogue-actions .btn { width: 100%; }
+
+  /* === 终极考核 === */
+  .final-task-container { padding: 16px; }
+  .final-task-input { min-height: 120px; font-size: 13px; padding: 12px; }
+
+  /* === 底部导航按钮 === */
+  .section-nav-buttons {
+    flex-direction: column; gap: 10px;
+    position: sticky; bottom: 0;
+    background: var(--bg); padding: 12px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+  .section-nav-buttons .btn {
+    width: 100%; text-align: center;
+    padding: 14px 24px; font-size: 15px;
+  }
+  .section-nav-buttons > div { width: 100%; }
+
+  /* === 笔记面板 === */
   .notes-toggle { display: none; }
+  .notes-panel { width: 100%; max-width: 340px; }
+
+  /* === Toast居中 === */
+  .toast {
+    left: 50%; right: auto;
+    transform: translateX(-50%);
+    bottom: 80px;
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 10px 20px;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* === 证书弹窗 === */
+  .certificate-paper {
+    width: 95%; max-width: 95%; padding: 28px 20px;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .cert-title { font-size: 22px; }
+  .cert-body { font-size: 13px; line-height: 1.8; }
+  .cert-actions { flex-direction: column; }
+  .cert-actions .btn { width: 100%; }
+
+  /* === 高亮框 === */
+  .highlight-box { padding: 14px 16px; font-size: 13px; }
+
+  /* === 分数圈 === */
+  .score-circle { width: 56px; height: 56px; font-size: 22px; }
+
+  /* === 关键词标签 === */
+  .keyword-tag { font-size: 11px; padding: 3px 8px; }
 }
 </style>
 </head>
@@ -537,6 +669,7 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
 
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
+  <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="关闭菜单">✕</button>
   <div class="sidebar-header">
     <h3>AI 微课</h3>
     <div class="course-title">退费挽单实战演练：规则、流程与高阶话术</div>
@@ -560,9 +693,11 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div class="mobile-header">
-  <button onclick="toggleSidebar()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">☰</button>
-  <span style="font-weight:700;font-size:14px;">退费挽单实战 · 微课</span>
+  <button class="mh-btn" onclick="toggleSidebar()" aria-label="菜单">☰</button>
+  <span class="mh-title" id="mhTitle">退费挽单实战 · 微课</span>
+  <span style="font-size:12px;opacity:0.7;white-space:nowrap;" id="mhTimer">00:00</span>
 </div>
+<div class="mobile-progress-bar"><div class="mpb-fill" id="mpbFill"></div></div>
 
 <!-- Notes Panel -->
 <button class="notes-toggle" id="notesToggle" onclick="toggleNotes()">📝 笔记</button>
@@ -1076,8 +1211,11 @@ function navigateTo(index) {
   updateNotesForSection(index);
   saveProgress();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 移动端：关闭侧边栏、更新顶部标题
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('show');
+  const mhTitle = document.getElementById('mhTitle');
+  if (mhTitle) mhTitle.textContent = courseData.sections[index].title;
 }
 
 function markComplete(index) {
@@ -1106,6 +1244,9 @@ function updateProgress() {
   const pct = Math.round((viewed.size / total) * 100);
   document.getElementById('progressPercent').textContent = pct + '%';
   document.getElementById('progressFill').style.width = pct + '%';
+  // 移动端进度条
+  const mpbFill = document.getElementById('mpbFill');
+  if (mpbFill) mpbFill.style.width = pct + '%';
   document.querySelectorAll('.nav-section').forEach((el, i) => {
     if (completedSections.has(i)) el.classList.add('completed');
   });
@@ -1361,8 +1502,11 @@ function startTimer() {
 function updateTimerDisplay() {
   const mins = Math.floor(studySeconds / 60);
   const secs = studySeconds % 60;
+  const timeStr = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
   const el = document.getElementById('timerDisplay');
-  if (el) el.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+  if (el) el.textContent = timeStr;
+  const mhTimer = document.getElementById('mhTimer');
+  if (mhTimer) mhTimer.textContent = '⏱ ' + timeStr;
 }
 
 // === Notes ===
