@@ -997,7 +997,7 @@ function renderSections() {
       ${s.type === 'content_chart_dialogue' ? renderDialogue(quizzes[s.quizId], i) : ''}
       <div class="section-nav-buttons">
         <div>${i > 0 ? `<button class="btn btn-outline" onclick="navigateTo(${i-1})">← 上一章</button>` : ''}</div>
-        <div>${i < courseData.sections.length - 1 ? `<button class="btn" onclick="markComplete(${i});navigateTo(${i+1})">下一章 →</button>` : `<button class="btn btn-success" onclick="markComplete(${i})">✓ 完成课程</button>`}</div>
+        <div>${i < courseData.sections.length - 1 ? `<button class="btn" onclick="markComplete(${i});navigateTo(${i+1})">下一章 →</button>` : `<button class="btn btn-success" id="completeCourseBtn" onclick="tryCompleteCourse(${i})">✓ 完成课程</button>`}</div>
       </div>
     </div>
   `).join('');
@@ -1086,6 +1086,18 @@ function markComplete(index) {
   saveProgress();
   showToast('「' + courseData.sections[index].title + '」已完成 ✓', 'success');
   checkCertificate();
+}
+
+function tryCompleteCourse(index) {
+  if (!finalTaskSubmitted) {
+    showToast('🔒 请先完成「终极考核：挽单实战演练」并提交答案', 'warning');
+    return;
+  }
+  if (finalScore < 60) {
+    showToast('🔒 终极考核得分未达到 60 分（当前 ' + finalScore + ' 分），请重新作答', 'warning');
+    return;
+  }
+  markComplete(index);
 }
 
 function updateProgress() {
