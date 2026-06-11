@@ -91,6 +91,8 @@ body {
 }
 .nav-section.completed { color: #94a3b8; }
 .nav-section.completed .nav-icon { background: var(--success); color: #fff; }
+.nav-section.locked { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+.nav-section.locked .nav-icon { background: rgba(255,255,255,0.08); color: #64748b; }
 
 .nav-icon {
   width: 32px; height: 32px; min-width: 32px; border-radius: 50%;
@@ -396,6 +398,7 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
 }
 .toast.success { background: var(--success); color: #fff; }
 .toast.info { background: var(--primary); color: #fff; }
+.toast.warning { background: #f59e0b; color: #fff; }
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -971,6 +974,18 @@ function renderSidebar() {
       </div>
     </div>
   `).join('');
+  updateSidebarLocks();
+}
+
+function updateSidebarLocks() {
+  document.querySelectorAll('.nav-section').forEach((el, i) => {
+    const check = canNavigateTo(i);
+    if (!check.ok && i !== currentSection) {
+      el.classList.add('locked');
+    } else {
+      el.classList.remove('locked');
+    }
+  });
 }
 
 function renderSections() {
@@ -1030,7 +1045,26 @@ function renderDialogue(quiz, sectionIndex) {
   `;
 }
 
+function canNavigateTo(index) {
+  // 逐节检查：跳转到 index 之前，所有有互动的章节必须已完成
+  // Section 1 (index=1): 含 quiz1，必须 quiz1Answered
+  // Section 2 (index=2): 含 quiz2 (AI对话)，必须 quiz2Answered 且 quiz2Score >= 60
+  if (index > 1) {
+    if (!quiz1Answered) return { ok: false, msg: '请先完成「规则地图速记」的互动选择题' };
+  }
+  if (index > 2) {
+    if (!quiz2Answered) return { ok: false, msg: '请先完成「预警与挽单策略」的 AI 模拟对话' };
+    if (quiz2Score < 60) return { ok: false, msg: 'AI 模拟对话得分未达到 60 分，请重新作答后再进入下一章节' };
+  }
+  return { ok: true };
+}
+
 function navigateTo(index) {
+  const check = canNavigateTo(index);
+  if (!check.ok) {
+    showToast('🔒 ' + check.msg, 'warning');
+    return;
+  }
   currentSection = index;
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-section').forEach(n => n.classList.remove('active'));
@@ -1085,7 +1119,7 @@ function selectQuizOption(el, optionIndex, quizId) {
     feedback.className = 'quiz-feedback show wrong';
     feedback.innerHTML = quiz.feedback_wrong;
   }
-  saveProgress(); checkCertificate();
+  saveProgress(); checkCertificate(); updateSidebarLocks();
 }
 
 // === Quiz 2: AI Dialogue ===
@@ -1130,7 +1164,7 @@ function submitDialogue() {
   feedback.classList.add('show');
   document.getElementById('submitDialogueBtn').disabled = true;
   input.disabled = true;
-  saveProgress(); checkCertificate();
+  saveProgress(); checkCertificate(); updateSidebarLocks();
 }
 
 function resetDialogue() {
@@ -1140,6 +1174,7 @@ function resetDialogue() {
   document.getElementById('submitDialogueBtn').disabled = false;
   document.getElementById('dialogueFeedback').classList.remove('show');
   document.getElementById('dialogueFeedback').innerHTML = '';
+  updateSidebarLocks();
 }
 
 function setupQuizListeners() {
