@@ -1329,6 +1329,7 @@ function loadProgress() {
       finalTaskSubmitted = saved.finalTaskSubmitted || false;
       finalScore = saved.finalScore || 0;
       updateProgress();
+      updateSidebarLocks();
         }
   } catch (e) {}
 }
