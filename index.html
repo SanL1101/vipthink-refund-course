@@ -891,14 +891,13 @@ const courseData = {
           <div id="finalFeedback" style="display:none;margin-top:20px;"></div>
         </div>
 
-        <!-- Task Checklist -->
+        <!-- 补充学习 -->
         <div class="card">
-          <div class="card-title">✅ 考核与评估方案</div>
-          <ul class="task-checklist">
-            <li id="checklist1"><span class="check-icon">1</span><span>随堂测验：完成互动练习（规则地图选择题）</span></li>
-            <li id="checklist2"><span class="check-icon">2</span><span>课后练习：完成AI模拟对话（挽单场景），评分 ≥ 80分</span></li>
-            <li id="checklist3"><span class="check-icon">3</span><span>终极考核：完成挽单实战演练，三项维度评分通过</span></li>
-          </ul>
+          <div class="card-title">📚 补充学习</div>
+          <div style="text-align:center;margin-top:12px;">
+            <img src="课程规则海报.png" alt="退费挽单规则海报" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.1);" loading="lazy">
+            <p style="margin-top:10px;font-size:13px;color:#64748b;">📎 点击海报可放大查看</p>
+          </div>
         </div>
       `
     }
@@ -1052,7 +1051,6 @@ function navigateTo(index) {
 function markComplete(index) {
   completedSections.add(index);
   updateProgress();
-  updateChecklist();
   saveProgress();
   showToast('「' + courseData.sections[index].title + '」已完成 ✓', 'success');
   checkCertificate();
@@ -1067,21 +1065,6 @@ function updateProgress() {
   document.querySelectorAll('.nav-section').forEach((el, i) => {
     if (completedSections.has(i)) el.classList.add('completed');
   });
-}
-
-function updateChecklist() {
-  if (quiz1Answered) {
-    const el = document.getElementById('checklist1');
-    if (el) { el.classList.add('done'); el.querySelector('.check-icon').textContent = '✓'; }
-  }
-  if (quiz2Answered && quiz2Score >= 80) {
-    const el = document.getElementById('checklist2');
-    if (el) { el.classList.add('done'); el.querySelector('.check-icon').textContent = '✓'; }
-  }
-  if (finalTaskSubmitted) {
-    const el = document.getElementById('checklist3');
-    if (el) { el.classList.add('done'); el.querySelector('.check-icon').textContent = '✓'; }
-  }
 }
 
 // === Quiz 1 ===
@@ -1104,7 +1087,7 @@ function selectQuizOption(el, optionIndex, quizId) {
     feedback.className = 'quiz-feedback show wrong';
     feedback.innerHTML = quiz.feedback_wrong;
   }
-  updateChecklist(); saveProgress(); checkCertificate();
+  saveProgress(); checkCertificate();
 }
 
 // === Quiz 2: AI Dialogue ===
@@ -1149,7 +1132,7 @@ function submitDialogue() {
   feedback.classList.add('show');
   document.getElementById('submitDialogueBtn').disabled = true;
   input.disabled = true;
-  updateChecklist(); saveProgress(); checkCertificate();
+  saveProgress(); checkCertificate();
 }
 
 function resetDialogue() {
@@ -1159,7 +1142,6 @@ function resetDialogue() {
   document.getElementById('submitDialogueBtn').disabled = false;
   document.getElementById('dialogueFeedback').classList.remove('show');
   document.getElementById('dialogueFeedback').innerHTML = '';
-  updateChecklist();
 }
 
 function setupQuizListeners() {
@@ -1237,7 +1219,7 @@ function submitFinalTask() {
     </div>
   `;
 
-  updateChecklist(); saveProgress();
+  saveProgress();
   input.disabled = true;
   showToast('通关任务已提交！', 'success');
   checkCertificate();
@@ -1250,7 +1232,6 @@ function resetFinalTask() {
   document.getElementById('finalFeedback').style.display = 'none';
   document.getElementById('finalFeedback').innerHTML = '';
   document.getElementById('finalCharCount').textContent = '0 / 500字';
-  updateChecklist();
 }
 
 // === Timer ===
@@ -1315,8 +1296,7 @@ function loadProgress() {
       finalTaskSubmitted = saved.finalTaskSubmitted || false;
       finalScore = saved.finalScore || 0;
       updateProgress();
-      updateChecklist();
-    }
+        }
   } catch (e) {}
 }
 
