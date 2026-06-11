@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微课：退费挽单实战演练 — 规则、流程与高阶话术</title>
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --accent: #f59e0b;
+  --accent-light: #fbbf24;
+  --success: #10b981;
+  --danger: #ef4444;
+  --bg: #f0f7ff;
+  --card: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #bfdbfe;
+  --sidebar-bg: #1e293b;
+  --sidebar-text: #cbd5e1;
+  --sidebar-active: #3b82f6;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 280px; min-width: 280px;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  transition: transform 0.3s;
+}
+
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.sidebar-header h3 {
+  font-size: 14px; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+}
+.sidebar-header .course-title {
+  font-size: 16px; font-weight: 700; color: #fff; line-height: 1.4;
+}
+
+.sidebar-progress {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: #94a3b8; margin-bottom: 8px;
+}
+.progress-bar {
+  height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--sidebar-active); border-radius: 3px;
+  transition: width 0.5s ease; width: 0%;
+}
+
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 0; }
+
+.nav-section {
+  padding: 8px 20px; cursor: pointer;
+  display: flex; align-items: flex-start; gap: 12px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+.nav-section:hover { background: rgba(255,255,255,0.05); }
+.nav-section.active {
+  background: rgba(59,130,246,0.15);
+  border-left-color: var(--sidebar-active); color: #fff;
+}
+.nav-section.completed { color: #94a3b8; }
+.nav-section.completed .nav-icon { background: var(--success); color: #fff; }
+
+.nav-icon {
+  width: 32px; height: 32px; min-width: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  color: var(--sidebar-text); transition: all 0.3s;
+}
+.nav-section.active .nav-icon { background: var(--sidebar-active); color: #fff; }
+.nav-info .nav-label { font-size: 13px; font-weight: 600; }
+.nav-info .nav-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+.nav-section.active .nav-info .nav-sub { color: #94a3b8; }
+
+.sidebar-footer {
+  padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px; color: #64748b;
+}
+
+/* === Study Timer === */
+.study-timer {
+  padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 10px; font-size: 13px;
+}
+.timer-icon { font-size: 16px; }
+.timer-display { color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+.timer-label { color: #94a3b8; font-size: 11px; }
+
+/* === Main Content === */
+.main { margin-left: 280px; flex: 1; padding: 40px; max-width: 900px; }
+
+.section { display: none; animation: fadeSlide 0.4s ease; }
+.section.active { display: block; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header { margin-bottom: 32px; }
+.section-badge {
+  display: inline-block; padding: 4px 14px;
+  background: #dbeafe; color: var(--primary-dark);
+  border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 12px;
+}
+.section-header h1 { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.section-header .duration { font-size: 14px; color: var(--text-secondary); }
+
+.card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 28px; margin-bottom: 20px;
+  box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.card-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+
+.highlight-box {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-left: 4px solid var(--primary);
+  padding: 20px 24px; border-radius: var(--radius-sm); margin: 20px 0;
+}
+.highlight-box.warning {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-left-color: var(--accent);
+}
+.highlight-box.danger {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-left-color: var(--danger);
+}
+.highlight-box.success {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border-left-color: var(--success);
+}
+
+.script-block {
+  background: #f1f5f9; padding: 20px 24px; border-radius: var(--radius-sm);
+  font-style: italic; color: #475569; position: relative; margin: 16px 0; line-height: 1.8;
+}
+.script-block::before {
+  content: '🎙️ 旁白稿';
+  position: absolute; top: -10px; left: 16px;
+  background: #475569; color: #fff;
+  padding: 2px 10px; border-radius: 10px; font-size: 11px; font-style: normal;
+}
+
+/* === Flow Steps === */
+.flow-steps { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.flow-step {
+  flex: 1; min-width: 140px;
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: var(--radius-sm); padding: 20px; text-align: center;
+  box-shadow: var(--shadow); position: relative;
+}
+.flow-step .step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px; margin-bottom: 10px;
+}
+.flow-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.flow-step p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+.flow-arrow {
+  display: flex; align-items: center; font-size: 24px;
+  color: var(--primary); min-width: 20px; justify-content: center;
+}
+
+/* === Callout Grid === */
+.callout-grid { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.callout-item {
+  flex: 1; min-width: 140px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 20px; text-align: center;
+  box-shadow: var(--shadow);
+}
+.callout-item .icon { font-size: 32px; margin-bottom: 8px; }
+.callout-item h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+.callout-item p { font-size: 12px; color: var(--text-secondary); }
+
+/* === Video === */
+.video-wrapper { margin: 24px 0; }
+.video-label {
+  font-size: 14px; font-weight: 600; color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+video { width: 100%; border-radius: var(--radius-sm); background: #000; }
+
+/* === Strategy Cards === */
+.strategy-grid { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.strategy-card {
+  flex: 1; min-width: 220px;
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: var(--radius-sm); padding: 20px; box-shadow: var(--shadow);
+}
+.strategy-card h4 { font-size: 14px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+.strategy-card .core { font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 10px; }
+.strategy-card .tactic { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+/* === Formula Box === */
+.formula-box {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #fff; padding: 24px; border-radius: var(--radius);
+  text-align: center; margin: 20px 0;
+}
+.formula-box h3 { font-size: 14px; color: #94a3b8; margin-bottom: 8px; }
+.formula-box .formula {
+  font-size: 24px; font-weight: 800; letter-spacing: 0.05em;
+  color: #60a5fa; margin: 12px 0;
+}
+.formula-box .note { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+
+/* === Lifeline Cards === */
+.lifeline-cards { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.lifeline-card {
+  flex: 1; min-width: 180px;
+  background: var(--card); border-radius: var(--radius-sm);
+  padding: 20px; box-shadow: var(--shadow);
+  border-top: 4px solid var(--danger);
+  text-align: center;
+}
+.lifeline-card .num {
+  font-size: 32px; font-weight: 800; color: var(--danger); margin-bottom: 8px;
+}
+.lifeline-card h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.lifeline-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+/* === Quiz === */
+.quiz-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 28px; margin: 20px 0;
+  box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.quiz-card.answered-correct { border-color: var(--success); background: #f0fdf4; }
+.quiz-card.answered-wrong { border-color: var(--danger); background: #fef2f2; }
+.quiz-question { font-size: 15px; font-weight: 600; margin-bottom: 20px; line-height: 1.6; }
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-option {
+  padding: 14px 16px; border: 2px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.2s; display: flex; gap: 10px; align-items: flex-start;
+}
+.quiz-option:hover { border-color: var(--primary); background: #eff6ff; }
+.quiz-option.selected { border-color: var(--primary); background: #dbeafe; }
+.quiz-option.correct { border-color: var(--success); background: #f0fdf4; }
+.quiz-option.wrong { border-color: var(--danger); background: #fef2f2; }
+.quiz-option-label {
+  width: 28px; height: 28px; min-width: 28px;
+  border-radius: 50%; background: #f1f5f9;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+}
+.quiz-option.correct .quiz-option-label { background: var(--success); color: #fff; }
+.quiz-option.wrong .quiz-option-label { background: var(--danger); color: #fff; }
+
+.quiz-feedback { display: none; margin-top: 20px; padding: 16px; border-radius: var(--radius-sm); font-size: 14px; }
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct { color: #065f46; background: #d1fae5; }
+.quiz-feedback.wrong { color: #991b1b; background: #fee2e2; }
+
+/* === Dialogue === */
+.dialogue-container {
+  background: var(--card); border-radius: var(--radius);
+  padding: 28px; margin: 20px 0;
+  box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.dialogue-scenario {
+  background: #dbeafe; padding: 14px 18px; border-radius: var(--radius-sm);
+  font-size: 13px; margin-bottom: 16px;
+}
+.customer-bubble {
+  background: #f1f5f9; padding: 16px 20px; border-radius: 12px 12px 12px 4px;
+  font-size: 14px; margin-bottom: 16px; position: relative;
+}
+.reply-input {
+  width: 100%; min-height: 100px; padding: 14px; border: 2px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;
+  resize: vertical; line-height: 1.6;
+}
+.reply-input:focus { outline: none; border-color: var(--primary); }
+.dialogue-actions { display: flex; gap: 12px; margin: 16px 0; }
+.ai-feedback-panel { display: none; }
+.ai-feedback-panel.show { display: block; }
+
+/* === Score === */
+.score-display { text-align: center; margin: 12px 0; }
+.score-circle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 72px; height: 72px; border-radius: 50%;
+  font-size: 28px; font-weight: 800; color: #fff;
+}
+.score-circle.high { background: var(--success); }
+.score-circle.medium { background: var(--accent); }
+.score-circle.low { background: var(--danger); }
+
+/* === Keywords === */
+.keywords-result { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.keyword-tag {
+  padding: 4px 10px; border-radius: 14px; font-size: 12px;
+}
+.keyword-tag.found { background: #d1fae5; color: #065f46; }
+.keyword-tag.missing { background: #fee2e2; color: #991b1b; }
+
+/* === Final Task === */
+.final-task-container {
+  background: var(--card); border-radius: var(--radius);
+  padding: 28px; margin: 20px 0;
+  box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.final-task-input {
+  width: 100%; min-height: 150px; padding: 14px;
+  border: 2px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; font-family: inherit; line-height: 1.7; resize: vertical;
+}
+.final-task-input:focus { outline: none; border-color: var(--primary); }
+.char-counter { text-align: right; font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+.eval-dimensions { display: flex; gap: 12px; flex-wrap: wrap; }
+.eval-dim {
+  flex: 1; min-width: 120px; text-align: center; padding: 16px;
+  border: 2px solid var(--border); border-radius: var(--radius-sm);
+}
+.eval-dim h4 { font-size: 13px; margin-bottom: 8px; }
+.eval-dim .stars { font-size: 18px; margin: 4px 0; }
+
+/* === Task Checklist === */
+.task-checklist { list-style: none; }
+.task-checklist li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid #f1f5f9;
+  font-size: 14px; color: var(--text-secondary);
+}
+.task-checklist li.done { color: var(--success); }
+.task-checklist li.done .check-icon { background: var(--success); color: #fff; }
+.check-icon {
+  width: 24px; height: 24px; min-width: 24px; border-radius: 50%;
+  background: #f1f5f9; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+
+/* === Section Nav Buttons === */
+.section-nav-buttons {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 32px 0; border-top: 1px solid var(--border); margin-top: 32px;
+}
+
+.btn {
+  padding: 10px 24px; border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  background: var(--primary); color: #fff;
+  transition: all 0.2s;
+}
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-outline {
+  background: transparent; border: 2px solid var(--border); color: var(--text);
+}
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: #eff6ff; }
+.btn-success { background: var(--success); }
+.btn-success:hover { background: #059669; }
+
+/* === Toast === */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  padding: 12px 24px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; z-index: 999;
+  animation: toastIn 0.3s ease;
+}
+.toast.success { background: var(--success); color: #fff; }
+.toast.info { background: var(--primary); color: #fff; }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Notes Panel === */
+.notes-toggle {
+  position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+  background: var(--sidebar-bg); color: var(--sidebar-text);
+  border: none; padding: 14px 8px; border-radius: 8px 0 0 8px;
+  cursor: pointer; font-size: 13px;
+  writing-mode: vertical-rl; z-index: 90;
+  transition: all 0.3s; box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+}
+.notes-toggle:hover { background: var(--primary); color: #fff; padding-right: 14px; }
+
+.notes-panel {
+  position: fixed; right: -360px; top: 0; bottom: 0;
+  width: 340px; background: var(--card);
+  box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+  z-index: 95; transition: right 0.35s ease;
+  display: flex; flex-direction: column;
+}
+.notes-panel.open { right: 0; }
+.notes-header {
+  padding: 20px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.notes-header h3 { font-size: 16px; }
+.notes-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary); }
+.notes-chapter-label { padding: 12px 20px; font-size: 13px; color: var(--primary-dark); font-weight: 600; background: #eff6ff; }
+.notes-textarea {
+  flex: 1; padding: 16px 20px; border: none; resize: none;
+  font-size: 14px; font-family: inherit; line-height: 1.7; outline: none;
+}
+.notes-footer {
+  padding: 12px 20px; border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-secondary);
+}
+
+/* === Certificate === */
+.certificate-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+}
+.certificate-paper {
+  background: #fff; width: 90%; max-width: 700px;
+  border-radius: var(--radius); padding: 48px 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  position: relative; text-align: center;
+}
+.certificate-close {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none; font-size: 20px;
+  cursor: pointer; color: var(--text-secondary);
+}
+.cert-icon { font-size: 48px; margin-bottom: 12px; }
+.cert-title { font-size: 28px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+.cert-subtitle { font-size: 12px; color: var(--text-secondary); letter-spacing: 0.1em; margin-bottom: 24px; }
+.cert-body { font-size: 15px; line-height: 2; color: var(--text); }
+.cert-name { display: inline-block; border-bottom: 2px solid var(--primary); min-width: 120px; padding: 4px 12px; margin: 0 4px; }
+.cert-course { font-weight: 700; color: var(--primary-dark); margin: 8px 0; }
+.cert-score { margin: 20px 0; font-size: 16px; font-weight: 600; color: var(--success); }
+.cert-footer {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--text-secondary); margin-top: 32px;
+  border-top: 1px solid var(--border); padding-top: 16px;
+}
+.cert-actions { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+
+/* === Flash Cards === */
+.flash-cards { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
+.flash-card {
+  flex: 1; min-width: 200px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 2px solid #93c5fd; border-radius: var(--radius-sm);
+  padding: 20px; box-shadow: var(--shadow);
+}
+.flash-card.warning-card {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border-color: #fde68a;
+}
+.flash-card h4 { font-size: 13px; color: var(--primary-dark); margin-bottom: 8px; }
+.flash-card p { font-size: 13px; color: var(--text); line-height: 1.6; font-style: italic; }
+
+/* === Calculation Demo === */
+.calc-demo {
+  background: #f8fafc; border: 2px solid var(--border);
+  border-radius: var(--radius-sm); padding: 20px; margin: 16px 0;
+}
+.calc-step { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 14px; }
+.calc-step .step-label {
+  background: var(--primary); color: #fff;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; min-width: 28px;
+}
+.calc-result {
+  background: var(--primary); color: #fff;
+  padding: 12px 20px; border-radius: var(--radius-sm);
+  text-align: center; font-size: 20px; font-weight: 800; margin-top: 12px;
+}
+
+/* === Mobile Responsive === */
+.mobile-header {
+  display: none; background: var(--sidebar-bg); color: #fff;
+  padding: 12px 16px; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 50;
+}
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 99;
+}
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.show { display: block; }
+  .mobile-header { display: flex; }
+  .main { margin-left: 0; padding: 20px 16px; }
+  .section-header h1 { font-size: 22px; }
+  .card { padding: 20px; }
+  .flow-steps { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  .strategy-grid { flex-direction: column; }
+  .lifeline-cards { flex-direction: column; }
+  .callout-grid { flex-direction: column; }
+  .flash-cards { flex-direction: column; }
+  .section-nav-buttons { flex-direction: column; gap: 12px; }
+  .notes-toggle { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h3>AI 微课</h3>
+    <div class="course-title">退费挽单实战演练：规则、流程与高阶话术</div>
+  </div>
+  <div class="sidebar-progress">
+    <div class="progress-label">
+      <span>学习进度</span>
+      <span id="progressPercent">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="study-timer">
+    <span class="timer-icon">⏱</span>
+    <span class="timer-display" id="timerDisplay">00:00</span>
+    <span class="timer-label">学习时长</span>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav"></nav>
+  <div class="sidebar-footer">VIPTHINK · CC/LP 退费挽单培训</div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="mobile-header">
+  <button onclick="toggleSidebar()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">☰</button>
+  <span style="font-weight:700;font-size:14px;">退费挽单实战 · 微课</span>
+</div>
+
+<!-- Notes Panel -->
+<button class="notes-toggle" id="notesToggle" onclick="toggleNotes()">📝 笔记</button>
+<div class="notes-panel" id="notesPanel">
+  <div class="notes-header"><h3>📝 学习笔记</h3><button class="notes-close" onclick="toggleNotes()">✕</button></div>
+  <div class="notes-chapter-label" id="notesChapterLabel">开场</div>
+  <textarea class="notes-textarea" id="notesTextarea" placeholder="在这里记录你的学习心得、关键要点……"></textarea>
+  <div class="notes-footer">笔记自动保存 💾</div>
+</div>
+
+<!-- Certificate Overlay -->
+<div class="certificate-overlay" id="certOverlay" style="display:none;">
+  <div class="certificate-paper" id="certPaper">
+    <button class="certificate-close" onclick="closeCertificate()">✕</button>
+    <div class="cert-icon">🏆</div>
+    <div class="cert-title">结 业 证 书</div>
+    <div class="cert-subtitle">CERTIFICATE OF COMPLETION</div>
+    <div class="cert-body">
+      兹证明学员
+      <div class="cert-name" id="certStudentName" contenteditable="true">___________</div>
+      已完成 AI 微课培训课程
+      <div class="cert-course">《退费挽单实战演练：规则、流程与高阶话术》</div>
+      课程内容：掌握退费处理核心规则、预警挽单策略、计算风控要点及三阶实战工作法
+    </div>
+    <div class="cert-score" id="certScore">综合评定：通过</div>
+    <div class="cert-footer">
+      <span id="certDate"></span>
+      <span>VIPTHINK · CC/LP 培训体系</span>
+    </div>
+    <div class="cert-actions">
+      <button class="btn" onclick="printCertificate()">🖨️ 打印证书</button>
+      <button class="btn btn-outline" onclick="closeCertificate()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="main" id="mainContent"></main>
+
+<script>
+// === Course Data ===
+const courseData = {
+  title: '退费挽单实战演练：规则、流程与高阶话术',
+  target: '面向CC（课程顾问）与LP（学习规划师）',
+  duration: '约14分钟（含互动与练习）',
+  sections: [
+    {
+      id: 's0', title: '开场：直面退费危机', duration: '0-2.5分钟', icon: '▶', type: 'content',
+      content: `
+        <div class="section-header">
+          <span class="section-badge">开场导入</span>
+          <h1>开场：直面退费危机</h1>
+          <span class="duration">⏱ 0-2.5分钟</span>
+        </div>
+
+        <div class="highlight-box warning">
+          <strong>🎯 核心目标：</strong>理解退费不是服务的终点，而是检验服务体系、挽回客户信任的关键战场。将晦涩的退费条款拆解为可视化决策路径，把被动解释转化为主动解决。
+        </div>
+
+        <div class="script-block">
+          大家好。在日常工作中，退费是每一位CC和LP都会面对的实战场景。今天这节微课，我们将系统性地拆解退费挽单的规则、流程与高阶话术，帮助大家从手忙脚乱到从容应对。
+        </div>
+
+        <div class="video-wrapper">
+          <div class="video-label">🎬 开场视频（PPT讲解）</div>
+          <video controls preload="metadata" playsinline webkit-playsinline>
+            <source src="refund_ch1_kaichang.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="callout-grid">
+          <div class="callout-item"><div class="icon">🗺️</div><h4>规则变地图</h4><p>退费条款→可视化决策路径</p></div>
+          <div class="callout-item"><div class="icon">🛡️</div><h4>话术变武器</h4><p>被动解释→主动解决</p></div>
+          <div class="callout-item"><div class="icon">🏆</div><h4>客户保卫战</h4><p>不只教怎么退，更教怎么留</p></div>
+        </div>
+
+        <div class="highlight-box">
+          <strong>💡 核心认知：</strong>退费不是服务的终点，而是检验服务体系、挽回客户信任的关键战场。把退费沟通变为建立信任、展现专业的新契机。
+        </div>
+      `
+    },
+    {
+      id: 's1', title: '规则地图速记', duration: '2.5-4.5分钟', icon: '1',
+      type: 'content_quiz', quizId: 'quiz1',
+      content: `
+        <div class="section-header">
+          <span class="section-badge">模块一</span>
+          <h1>规则地图：退费处理核心三步曲</h1>
+          <span class="duration">⏱ 2.5-4.5分钟</span>
+        </div>
+
+        <div class="highlight-box">
+          <strong>📖 核心记忆：</strong><strong style="color:#d97706;">4节课定角色</strong>，<strong style="color:#d97706;">挽单是必经动作</strong>，<strong style="color:#d97706;">48小时是死线</strong>。按流程执行，既合规又能最大程度挽回客户。
+        </div>
+
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="step-num">1</div>
+            <h4>判断核心节点</h4>
+            <p>已上课时≤4节？<br>是→CC主导（试学期内）<br>否→LP主导（试学期外）</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="step-num">2</div>
+            <h4>执行必须动作</h4>
+            <p>无论期内外<br>退费前必须先挽单<br>流程红线不可跳过</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">
+            <div class="step-num">3</div>
+            <h4>限时提交审批</h4>
+            <p>挽单失败后48h内<br>OA提交退费申请<br>附完整挽单记录</p>
+          </div>
+        </div>
+
+        <div class="video-wrapper">
+          <div class="video-label">🎬 规则地图速记（PPT讲解）</div>
+          <video controls preload="metadata" playsinline webkit-playsinline>
+            <source src="refund_ch2_guize.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="flash-cards">
+          <div class="flash-card">
+            <h4>📌 角色判断口诀</h4>
+            <p>"4节课内CC上，4节课外LP扛；挽单动作不能少，48小时把单交。"</p>
+          </div>
+        </div>
+      `
+    },
+    {
+      id: 's2', title: '预警与挽单策略', duration: '4.5-8分钟', icon: '2',
+      type: 'content_chart_dialogue', quizId: 'quiz2',
+      content: `
+        <div class="section-header">
+          <span class="section-badge">模块二</span>
+          <h1>预警与挽单策略</h1>
+          <span class="duration">⏱ 4.5-8分钟</span>
+        </div>
+
+        <div class="highlight-box warning">
+          <strong>🔄 核心理念转变：</strong>从被动"救火"转向主动"防火"。挽单的本质是<strong style="color:#d97706;">"解决问题"</strong>，而非单纯"留住订单"。
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚨 预警信号：主动排查，提前"防火"</div>
+          <div class="callout-grid">
+            <div class="callout-item" style="border-color:#fca5a5;">
+              <div class="icon">👤</div>
+              <h4>用户端关键征兆</h4>
+              <p>孩子对课程提不起兴趣<br>沟通回应迟缓、态度敷衍<br>不再主动交流学习情况</p>
+            </div>
+            <div class="callout-item" style="border-color:#fca5a5;">
+              <div class="icon">🖥️</div>
+              <h4>平台端风险信号</h4>
+              <p>排课频繁时间冲突<br>教师/班主任临时更换<br>服务响应不及时</p>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;">💡 建立全链路预警机制，在负面情绪发酵前主动介入关怀，扼杀风险于萌芽。</p>
+        </div>
+
+        <div class="video-wrapper">
+          <div class="video-label">🎬 预警与挽单策略（PPT讲解）</div>
+          <video controls preload="metadata" playsinline webkit-playsinline>
+            <source src="refund_ch3_yujing.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛡️ 标准化挽单策略：三大场景精准匹配</div>
+          <div class="strategy-grid">
+            <div class="strategy-card">
+              <h4>⏰ 时间紧张，没空上课</h4>
+              <div class="core">核心诉求：调整灵活性</div>
+              <div class="tactic">✅ 展示固定消课+灵活补课双重机制<br>✅ 强化长期价值规划</div>
+            </div>
+            <div class="strategy-card">
+              <h4>📉 不感兴趣/效果不佳</h4>
+              <div class="core">核心诉求：看到直观效果</div>
+              <div class="tactic">✅ 展示同年龄段优秀案例<br>✅ 立即安排效果体验课</div>
+            </div>
+            <div class="strategy-card">
+              <h4>🔄 老师/班主任更换</h4>
+              <div class="core">核心诉求：教学连贯性</div>
+              <div class="tactic">✅ 承诺1周内新老师对接<br>✅ 展示新老师权威认证与成果</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-top:12px;">💡 每一个退费理由背后，都隐藏着未被满足的深层需求。挽单的关键在于精准洞察并匹配针对性方案。</p>
+        </div>
+
+        <div class="flash-cards">
+          <div class="flash-card warning-card">
+            <h4>🌟 高手思维</h4>
+            <p>真正的挽单不是等家长开口才被动应对，而是在预警信号出现时就前置行动。共情为先，不急于辩解；提供具体方案，而非空洞承诺。</p>
+          </div>
+        </div>
+      `
+    },
+    {
+      id: 's3', title: '计算、风控与避坑', duration: '8-12分钟', icon: '3', type: 'content',
+      content: `
+        <div class="section-header">
+          <span class="section-badge">模块三</span>
+          <h1>计算、风控与避坑指南</h1>
+          <span class="duration">⏱ 8-12分钟</span>
+        </div>
+
+        <div class="formula-box">
+          <h3>📐 退费金额计算核心公式</h3>
+          <div class="formula">退费金额 = 实付总价 ÷ 购买总课时 × 剩余课时</div>
+          <p class="note">按"实收实销"原则，将实付金额平摊至每节课时</p>
+          <p class="note" style="color:#fbbf24;margin-top:4px;">⚠️ 关键避坑：赠课不参与计算！仅以实际付费购买的课时数为准</p>
+        </div>
+
+        <div class="calc-demo">
+          <h4 style="font-size:14px;color:var(--text);margin-bottom:12px;">📋 实战案例核算</h4>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">学员实付<strong>5888元</strong>，购买<strong>48个</strong>付费课时，已完成<strong>36课时</strong>学习</p>
+          <div class="calc-step"><span class="step-label">1</span> 计算剩余课时：48 - 36 = <strong>12课时</strong></div>
+          <div class="calc-step"><span class="step-label">2</span> 代入公式：5888 ÷ 48 × 12</div>
+          <div class="calc-result">最终应退金额：¥ 1,472</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚡ 风控要点</div>
+          <div class="callout-grid">
+            <div class="callout-item" style="border-color:var(--danger);">
+              <div class="icon">🚫</div>
+              <h4>特殊退费处理</h4>
+              <p>严禁擅自承诺<br>必须邮件报批<br>一级负责人审批</p>
+            </div>
+            <div class="callout-item" style="border-color:var(--accent);">
+              <div class="icon">📋</div>
+              <h4>退费剔除规则</h4>
+              <p>TL牵头提报<br>当月25号/次月5号前<br>逾期不予受理</p>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;">核心原则：特殊退费重"审批"，杜绝个人决策；业绩剔除重"时效"，依托团队提报。</p>
+        </div>
+
+        <div class="video-wrapper">
+          <div class="video-label">🎬 计算、风控与避坑（PPT讲解）</div>
+          <video controls preload="metadata" playsinline webkit-playsinline>
+            <source src="refund_ch4_jisuan.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="highlight-box danger">
+          <strong>🔴 三大生命线（绝对不能碰）：</strong>
+        </div>
+        <div class="lifeline-cards">
+          <div class="lifeline-card">
+            <div class="num">01</div>
+            <h4>严禁过度承诺</h4>
+            <p>绝不承诺规则之外的内容，包括赠课可退、特殊折扣等</p>
+          </div>
+          <div class="lifeline-card">
+            <div class="num">02</div>
+            <h4>时效是生命线</h4>
+            <p>48h内必须完成OA提交流程，超时将导致流程失效</p>
+          </div>
+          <div class="lifeline-card">
+            <div class="num">03</div>
+            <h4>记录是证据</h4>
+            <p>完整附上挽单沟通记录：时间、话术、诉求、方案</p>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:14px;font-weight:700;color:var(--danger);margin-top:8px;">合规是底线 · 时效是保障 · 留痕是关键</p>
+      `
+    },
+    {
+      id: 's4', title: '总结：三阶工作法', duration: '12-14分钟', icon: '4',
+      type: 'content',
+      content: `
+        <div class="section-header">
+          <span class="section-badge">总结回顾</span>
+          <h1>总结与实战考核</h1>
+          <span class="duration">⏱ 12-14分钟</span>
+        </div>
+
+        <div class="highlight-box success">
+          <strong>🔑 核心洞察：</strong>退费不是服务的终点，而是审视服务质量、挖掘学员需求、提升课程价值的重要起点。
+        </div>
+
+        <div class="flow-steps">
+          <div class="flow-step" style="border-color:var(--success);">
+            <div class="step-num" style="background:var(--success);">前</div>
+            <h4>事前·主动防火</h4>
+            <p>建立学员状态台账<br>每日主动检视进度与情绪<br>捕捉预警信号，提前介入</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" style="border-color:var(--accent);">
+            <div class="step-num" style="background:var(--accent);">中</div>
+            <h4>事中·高效救火</h4>
+            <p>判定剩余课时、明确主角<br>启动挽单策略<br>48h内OA提报</p>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" style="border-color:var(--primary);">
+            <div class="step-num">后</div>
+            <h4>事后·复盘优化</h4>
+            <p>深度复盘退费根因<br>梳理服务漏洞<br>沉淀标准化动作</p>
+          </div>
+        </div>
+
+        <div class="video-wrapper">
+          <div class="video-label">🎬 总结回顾（PPT讲解）</div>
+          <video controls preload="metadata" playsinline webkit-playsinline>
+            <source src="refund_ch5_zongjie.mp4?v=1" type="video/mp4">
+          </video>
+        </div>
+
+        <!-- Final Task -->
+        <div class="card final-task-container" id="finalTaskContainer">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="font-size:28px;">🏆</span>
+            <h3 style="font-size:18px;font-weight:700;">终极考核：挽单实战演练</h3>
+          </div>
+          <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">
+            <strong>场景：</strong>一位K2孩子家长来电，孩子已上课5节，家长说："孩子最近不积极，每次上课都磨蹭，我觉得没效果，想退了。"
+          </p>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+            请运用课程所学的<strong>三阶工作法</strong>和<strong>挽单策略</strong>，撰写一段挽单沟通话术。
+          </p>
+          <textarea class="final-task-input" id="finalTaskInput" placeholder="请在这里撰写你的挽单话术…&#10;&#10;提示：&#10;1. 先判断：5节课→试学期外→LP主导&#10;2. 共情为先，不急于辩解&#10;3. 精准匹配家长核心诉求（效果不佳）&#10;4. 提供具体方案（效果体验课+案例展示）&#10;5. 严守合规底线"></textarea>
+          <div class="char-counter" id="finalCharCount">0 / 500字</div>
+          <div style="margin-top:12px;display:flex;gap:12px;">
+            <button class="btn" id="finalSubmitBtn" onclick="submitFinalTask()">✉️ 提交考核</button>
+            <button class="btn btn-outline" onclick="resetFinalTask()">🔄 重新作答</button>
+          </div>
+          <div id="finalFeedback" style="display:none;margin-top:20px;"></div>
+        </div>
+
+        <!-- Task Checklist -->
+        <div class="card">
+          <div class="card-title">✅ 考核与评估方案</div>
+          <ul class="task-checklist">
+            <li id="checklist1"><span class="check-icon">1</span><span>随堂测验：完成互动练习（规则地图选择题）</span></li>
+            <li id="checklist2"><span class="check-icon">2</span><span>课后练习：完成AI模拟对话（挽单场景），评分 ≥ 80分</span></li>
+            <li id="checklist3"><span class="check-icon">3</span><span>终极考核：完成挽单实战演练，三项维度评分通过</span></li>
+          </ul>
+        </div>
+      `
+    }
+  ]
+};
+
+// === Quiz Data ===
+const quizzes = {
+  quiz1: {
+    quizId: 'quiz1',
+    question: '一位家长已带孩子上了5节课后提出退费。按照规则地图，以下哪个处理流程是正确的？',
+    options: [
+      { label: 'A', text: '直接给家长计算退费金额，尽快在OA提交申请。' },
+      { label: 'B', text: '由CC主导挽单，挽单失败后48h内提交OA。' },
+      { label: 'C', text: '由LP主导优先执行挽单，挽单失败后48h内在OA提交退费申请并附带挽单记录。' },
+      { label: 'D', text: '告诉家长已超出试学期，不能退费。' }
+    ],
+    correct: 2,
+    feedback_correct: '✅ <strong>回答正确！</strong>5节课已超出试学期（4节分水岭），应由LP主导；挽单是必须动作不可跳过；48h内提交OA并保留记录。这正是规则地图三步骤的标准流程。',
+    feedback_wrong: '❌ <strong>还需加强。</strong>注意：5节课已超出CC主导的试学期范围（≤4节），应由LP负责。选项A跳过了挽单步骤（流程红线），选项B角色判断错误，选项D直接放弃沟通。正确流程：LP主导→先挽单→挽单失败→48h内OA提交并留痕。'
+  },
+  quiz2: {
+    isDialogue: true,
+    question: '家长说："排课时间老是对不上，老师也换了好几个，感觉你们根本没有重视我家孩子，我要退费！"请运用预警挽单策略来回应：',
+    expectedKeywords: [
+      { word: '共情', weight: 15 },
+      { word: '理解', weight: 12 },
+      { word: '调整', weight: 12 },
+      { word: '方案', weight: 10 },
+      { word: '对接', weight: 10 },
+      { word: '时间', weight: 8 },
+      { word: '老师', weight: 8 },
+      { word: '承诺', weight: 8 },
+      { word: '响应', weight: 8 },
+      { word: '跟进', weight: 9 }
+    ],
+    scenario: '一位家长因为排课时间冲突和教师频繁更换感到不满，情绪比较激动。'
+  }
+};
+
+// === State ===
+let currentSection = 0;
+let completedSections = new Set();
+let quiz1Answered = false;
+let quiz2Answered = false;
+let quiz2Score = 0;
+let finalTaskSubmitted = false;
+let finalScore = 0;
+
+let studySeconds = 0;
+let timerInterval = null;
+
+// === Init ===
+function init() {
+  renderSidebar();
+  renderSections();
+  navigateTo(0);
+  setupQuizListeners();
+  setupFinalTaskListener();
+  startTimer();
+  loadNotes();
+  loadProgress();
+}
+
+function renderSidebar() {
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = courseData.sections.map((s, i) => `
+    <div class="nav-section" data-index="${i}" onclick="navigateTo(${i})">
+      <div class="nav-icon">${s.icon}</div>
+      <div class="nav-info">
+        <div class="nav-label">${s.title}</div>
+        <div class="nav-sub">⏱ ${s.duration}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSections() {
+  const main = document.getElementById('mainContent');
+  main.innerHTML = courseData.sections.map((s, i) => `
+    <div class="section" data-section="${i}">
+      ${s.content}
+      ${s.type === 'content_quiz' ? renderQuiz(quizzes[s.quizId], i) : ''}
+      ${s.type === 'content_chart_dialogue' ? renderDialogue(quizzes[s.quizId], i) : ''}
+      <div class="section-nav-buttons">
+        <div>${i > 0 ? `<button class="btn btn-outline" onclick="navigateTo(${i-1})">← 上一章</button>` : ''}</div>
+        <div>${i < courseData.sections.length - 1 ? `<button class="btn" onclick="markComplete(${i});navigateTo(${i+1})">下一章 →</button>` : `<button class="btn btn-success" onclick="markComplete(${i})">✓ 完成课程</button>`}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderQuiz(quiz, sectionIndex) {
+  if (!quiz || quiz.isDialogue) return '';
+  return `
+    <div class="quiz-card" id="quiz-${quiz.quizId || sectionIndex}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:24px;">✍️</span>
+        <h3 style="font-size:16px;font-weight:700;">互动练习：选择题</h3>
+      </div>
+      <div class="quiz-question">${quiz.question}</div>
+      <div class="quiz-options">
+        ${quiz.options.map((opt, oi) => `
+          <div class="quiz-option" data-option="${oi}" onclick="selectQuizOption(this, ${oi}, '${quiz.quizId || sectionIndex}')">
+            <span class="quiz-option-label">${opt.label}</span>
+            <span>${opt.text}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback" id="feedback-${quiz.quizId || sectionIndex}"></div>
+    </div>
+  `;
+}
+
+function renderDialogue(quiz, sectionIndex) {
+  if (!quiz || !quiz.isDialogue) return '';
+  return `
+    <div class="dialogue-container" id="dialogue-container">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:24px;">🤖</span>
+        <h3 style="font-size:16px;font-weight:700;">互动练习：AI模拟对话</h3>
+      </div>
+      <div class="dialogue-scenario"><strong>📋 场景设定：</strong>${quiz.scenario}</div>
+      <div class="customer-bubble">${quiz.question}</div>
+      <textarea class="reply-input" id="dialogueInput" placeholder="请运用共情引导+具体方案的策略组织回应..."></textarea>
+      <div class="dialogue-actions">
+        <button class="btn" id="submitDialogueBtn" onclick="submitDialogue()">提交回答</button>
+        <button class="btn btn-outline" onclick="resetDialogue()">重新作答</button>
+      </div>
+      <div class="ai-feedback-panel" id="dialogueFeedback"></div>
+    </div>
+  `;
+}
+
+function navigateTo(index) {
+  currentSection = index;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-section').forEach(n => n.classList.remove('active'));
+  const section = document.querySelector(`.section[data-section="${index}"]`);
+  if (section) section.classList.add('active');
+  const navItem = document.querySelector(`.nav-section[data-index="${index}"]`);
+  if (navItem) navItem.classList.add('active');
+  updateProgress();
+  updateNotesForSection(index);
+  saveProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+function markComplete(index) {
+  completedSections.add(index);
+  updateProgress();
+  updateChecklist();
+  saveProgress();
+  showToast('「' + courseData.sections[index].title + '」已完成 ✓', 'success');
+  checkCertificate();
+}
+
+function updateProgress() {
+  const total = courseData.sections.length;
+  const viewed = new Set([...completedSections, currentSection]);
+  const pct = Math.round((viewed.size / total) * 100);
+  document.getElementById('progressPercent').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.querySelectorAll('.nav-section').forEach((el, i) => {
+    if (completedSections.has(i)) el.classList.add('completed');
+  });
+}
+
+function updateChecklist() {
+  if (quiz1Answered) {
+    const el = document.getElementById('checklist1');
+    if (el) { el.classList.add('done'); el.querySelector('.check-icon').textContent = '✓'; }
+  }
+  if (quiz2Answered && quiz2Score >= 80) {
+    const el = document.getElementById('checklist2');
+    if (el) { el.classList.add('done'); el.querySelector('.check-icon').textContent = '✓'; }
+  }
+  if (finalTaskSubmitted) {
+    const el = document.getElementById('checklist3');
+    if (el) { el.classList.add('done'); el.querySelector('.check-icon').textContent = '✓'; }
+  }
+}
+
+// === Quiz 1 ===
+function selectQuizOption(el, optionIndex, quizId) {
+  if (quiz1Answered) return;
+  const quizCard = document.getElementById('quiz-' + quizId);
+  const quiz = quizzes.quiz1;
+  const feedback = document.getElementById('feedback-' + quizId);
+  quiz1Answered = true;
+  quizCard.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  if (optionIndex === quiz.correct) {
+    el.classList.add('correct');
+    quizCard.classList.add('answered-correct');
+    feedback.className = 'quiz-feedback show correct';
+    feedback.innerHTML = quiz.feedback_correct;
+  } else {
+    el.classList.add('wrong');
+    quizCard.classList.add('answered-wrong');
+    quizCard.querySelectorAll('.quiz-option')[quiz.correct].classList.add('correct');
+    feedback.className = 'quiz-feedback show wrong';
+    feedback.innerHTML = quiz.feedback_wrong;
+  }
+  updateChecklist(); saveProgress(); checkCertificate();
+}
+
+// === Quiz 2: AI Dialogue ===
+function submitDialogue() {
+  if (quiz2Answered) return;
+  const input = document.getElementById('dialogueInput');
+  const text = input.value.trim();
+  if (!text) { showToast('请先输入你的回答', 'info'); return; }
+  const quiz = quizzes.quiz2;
+  const feedback = document.getElementById('dialogueFeedback');
+  const lowerText = text.toLowerCase();
+  let totalScore = 0;
+  const keywordResults = quiz.expectedKeywords.map(kw => {
+    const found = lowerText.includes(kw.word.toLowerCase());
+    if (found) totalScore += kw.weight;
+    return { ...kw, found };
+  });
+  if (text.length >= 60) totalScore += 5;
+  if (text.length >= 120) totalScore += 5;
+  quiz2Score = Math.min(100, totalScore);
+  quiz2Answered = true;
+  let scoreLevel = quiz2Score >= 80 ? 'high' : quiz2Score >= 60 ? 'medium' : 'low';
+  let feedbackMsg = '';
+  if (quiz2Score >= 80) feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#065f46;margin-bottom:8px;">🎉 优秀！你的回应体现了共情引导+具体方案的专业挽单策略。</p>';
+  else if (quiz2Score >= 60) feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#92400e;margin-bottom:8px;">👍 不错！还有提升空间，争取覆盖更多关键要素。</p>';
+  else feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#991b1b;margin-bottom:8px;">📚 需要更多练习。建议回顾预警挽单章节后再试。</p>';
+  feedbackMsg += '<p style="font-size:13px;color:#64748b;margin-bottom:12px;">AI评估基于以下关键点检测：</p>';
+  feedbackMsg += '<div class="keywords-result">';
+  keywordResults.forEach(kr => {
+    feedbackMsg += '<span class="keyword-tag ' + (kr.found ? 'found' : 'missing') + '">' + (kr.found ? '✓' : '✗') + ' ' + kr.word + ' (' + kr.weight + '分)</span>';
+  });
+  if (text.length >= 60) feedbackMsg += '<span class="keyword-tag found">✓ 回答长度充足 (+5分)</span>';
+  if (text.length >= 120) feedbackMsg += '<span class="keyword-tag found">✓ 回答详尽 (+5分)</span>';
+  feedbackMsg += '</div>';
+  const missingKeywords = keywordResults.filter(k => !k.found);
+  if (missingKeywords.length > 0) {
+    feedbackMsg += '<div style="margin-top:16px;padding:12px;background:#fef2f2;border-radius:8px;font-size:13px;color:#991b1b;"><strong>💡 优化建议：</strong>你的回答中缺少以下关键要素：<br>';
+    feedbackMsg += missingKeywords.map(k => '· <strong>' + k.word + '</strong>').join('<br>');
+    feedbackMsg += '<br>建议将这些要素融入回答中，使挽单沟通更专业有效。</div>';
+  }
+  feedback.innerHTML = '<div class="score-display"><div class="score-circle ' + scoreLevel + '">' + quiz2Score + '</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">综合评分</div></div>' + feedbackMsg + (quiz2Score >= 80 ? '<div style="margin-top:12px;padding:12px;background:#ecfdf5;border-radius:8px;font-size:13px;color:#065f46;"><strong>✅ 练习通过！</strong>评分达到80分以上。</div>' : '');
+  feedback.classList.add('show');
+  document.getElementById('submitDialogueBtn').disabled = true;
+  input.disabled = true;
+  updateChecklist(); saveProgress(); checkCertificate();
+}
+
+function resetDialogue() {
+  quiz2Answered = false; quiz2Score = 0;
+  document.getElementById('dialogueInput').value = '';
+  document.getElementById('dialogueInput').disabled = false;
+  document.getElementById('submitDialogueBtn').disabled = false;
+  document.getElementById('dialogueFeedback').classList.remove('show');
+  document.getElementById('dialogueFeedback').innerHTML = '';
+  updateChecklist();
+}
+
+function setupQuizListeners() {
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+      const dialogueInput = document.getElementById('dialogueInput');
+      if (dialogueInput && document.activeElement === dialogueInput) submitDialogue();
+    }
+  });
+}
+
+function setupFinalTaskListener() {
+  const input = document.getElementById('finalTaskInput');
+  if (input) input.addEventListener('input', function() {
+    document.getElementById('finalCharCount').textContent = this.value.length + ' / 500字';
+  });
+}
+
+// === Final Task ===
+function submitFinalTask() {
+  const input = document.getElementById('finalTaskInput');
+  const text = input.value.trim();
+  if (!text) { showToast('请先输入你的挽单话术', 'info'); return; }
+  finalTaskSubmitted = true;
+
+  const hasJudge = /判断|5节|试学期|LP|主导/.test(text);
+  const hasEmpathy = /共情|理解|感受|情绪/.test(text);
+  const hasStrategy = /体验课|案例|效果|方案|调整|安排/.test(text);
+  const hasCompliance = /合规|记录|OA|48|底线/.test(text);
+
+  let dim1Score = 0;
+  if (hasJudge) dim1Score += 25;
+  if (hasEmpathy) dim1Score += 25;
+  if (hasStrategy) dim1Score += 25;
+  if (hasCompliance) dim1Score += 25;
+  const dim2Score = Math.min(100, text.length >= 80 ? 25 : 10 + (text.includes('我们') ? 15 : 0) + (text.includes('孩子') ? 10 : 0) + 25 + 25);
+  const dim3Score = Math.min(100, text.length >= 100 ? 40 + Math.min(60, Math.floor(text.length / 3)) : Math.min(40, Math.floor(text.length / 2)));
+
+  const totalScore = Math.round((dim1Score + dim2Score + dim3Score) / 3);
+  finalScore = totalScore;
+
+  const starEmojis = ['⭐', '⭐⭐', '⭐⭐⭐', '🌟🌟', '🌟🌟🌟'];
+  const feedbackEl = document.getElementById('finalFeedback');
+  feedbackEl.style.display = 'block';
+
+  let verdict = '';
+  if (totalScore >= 80) verdict = '🎉 <strong>通关成功！</strong>你的挽单话术体现了专业的三阶工作法，能够独立完成挽单实战沟通。';
+  else if (totalScore >= 60) verdict = '👍 <strong>基本通过。</strong>建议对照三阶工作法和挽单策略再加强。';
+  else verdict = '📚 <strong>需要重新练习。</strong>请回顾课程核心流程，组织语言后再次提交。';
+
+  feedbackEl.innerHTML = `
+    <div class="card" style="border:2px solid ${totalScore >= 80 ? 'var(--success)' : totalScore >= 60 ? 'var(--accent)' : 'var(--danger)'}">
+      <div class="score-display">
+        <div class="score-circle ${totalScore >= 80 ? 'high' : totalScore >= 60 ? 'medium' : 'low'}">${totalScore}</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">综合评分</div>
+      </div>
+      <div class="eval-dimensions" style="margin-top:20px;">
+        <div class="eval-dim" style="border-color:${dim1Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
+          <h4>📋 流程规范性</h4>
+          <div class="stars">${starEmojis[Math.floor(dim1Score / 20)]}</div>
+          <p style="font-size:12px;color:var(--text-secondary);">${dim1Score}分</p>
+        </div>
+        <div class="eval-dim" style="border-color:${dim2Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
+          <h4>🎯 挽单说服力</h4>
+          <div class="stars">${starEmojis[Math.floor(dim2Score / 20)]}</div>
+          <p style="font-size:12px;color:var(--text-secondary);">${dim2Score}分</p>
+        </div>
+        <div class="eval-dim" style="border-color:${dim3Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
+          <h4>💬 表达流畅度</h4>
+          <div class="stars">${starEmojis[Math.floor(dim3Score / 20)]}</div>
+          <p style="font-size:12px;color:var(--text-secondary);">${dim3Score}分</p>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:16px;background:${totalScore >= 80 ? '#ecfdf5' : totalScore >= 60 ? '#fffbeb' : '#fef2f2'};border-radius:8px;font-size:14px;">${verdict}</div>
+    </div>
+  `;
+
+  updateChecklist(); saveProgress();
+  input.disabled = true;
+  showToast('通关任务已提交！', 'success');
+  checkCertificate();
+}
+
+function resetFinalTask() {
+  finalTaskSubmitted = false; finalScore = 0;
+  document.getElementById('finalTaskInput').value = '';
+  document.getElementById('finalTaskInput').disabled = false;
+  document.getElementById('finalFeedback').style.display = 'none';
+  document.getElementById('finalFeedback').innerHTML = '';
+  document.getElementById('finalCharCount').textContent = '0 / 500字';
+  updateChecklist();
+}
+
+// === Timer ===
+function startTimer() {
+  const saved = localStorage.getItem('vipthink_refund_study_seconds');
+  if (saved) studySeconds = parseInt(saved);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    studySeconds++;
+    updateTimerDisplay();
+    if (studySeconds % 10 === 0) localStorage.setItem('vipthink_refund_study_seconds', studySeconds);
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const mins = Math.floor(studySeconds / 60);
+  const secs = studySeconds % 60;
+  const el = document.getElementById('timerDisplay');
+  if (el) el.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+}
+
+// === Notes ===
+function toggleNotes() {
+  document.getElementById('notesPanel').classList.toggle('open');
+}
+function updateNotesForSection(index) {
+  document.getElementById('notesChapterLabel').textContent = courseData.sections[index].title;
+  const saved = JSON.parse(localStorage.getItem('vipthink_refund_notes') || '{}');
+  document.getElementById('notesTextarea').value = saved[index] || '';
+}
+function loadNotes() {
+  const saved = JSON.parse(localStorage.getItem('vipthink_refund_notes') || '{}');
+  const ta = document.getElementById('notesTextarea');
+  if (ta) {
+    ta.value = saved[currentSection] || '';
+    ta.addEventListener('input', function() {
+      const all = JSON.parse(localStorage.getItem('vipthink_refund_notes') || '{}');
+      all[currentSection] = this.value;
+      localStorage.setItem('vipthink_refund_notes', JSON.stringify(all));
+    });
+  }
+}
+
+// === Progress Persistence ===
+function saveProgress() {
+  const state = {
+    completedSections: [...completedSections],
+    quiz1Answered, quiz2Answered, quiz2Score,
+    finalTaskSubmitted, finalScore
+  };
+  localStorage.setItem('vipthink_refund_progress', JSON.stringify(state));
+}
+
+function loadProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('vipthink_refund_progress'));
+    if (saved) {
+      completedSections = new Set(saved.completedSections || []);
+      quiz1Answered = saved.quiz1Answered || false;
+      quiz2Answered = saved.quiz2Answered || false;
+      quiz2Score = saved.quiz2Score || 0;
+      finalTaskSubmitted = saved.finalTaskSubmitted || false;
+      finalScore = saved.finalScore || 0;
+      updateProgress();
+      updateChecklist();
+    }
+  } catch (e) {}
+}
+
+// === Certificate ===
+function checkCertificate() {
+  const allDone = completedSections.size >= courseData.sections.length && quiz1Answered && quiz2Answered && finalTaskSubmitted;
+  if (allDone) {
+    setTimeout(() => {
+      showToast('🏆 恭喜完成全部课程！点击领取结业证书', 'success');
+      document.getElementById('certStudentName').textContent = '请填写姓名';
+      document.getElementById('certScore').textContent = '综合评定：通过';
+      document.getElementById('certDate').textContent = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('certOverlay').style.display = 'flex';
+    }, 1000);
+  }
+}
+
+function closeCertificate() {
+  document.getElementById('certOverlay').style.display = 'none';
+}
+
+function printCertificate() {
+  const cert = document.getElementById('certPaper');
+  const win = window.open('', '_blank', 'width=750,height=600');
+  win.document.write('<html><head><meta charset="UTF-8"><title>结业证书</title><style>');
+  win.document.write('body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f1f5f9;}');
+  win.document.write('.cert{background:#fff;width:700px;padding:48px 36px;text-align:center;border:2px solid #e2e8f0;border-radius:12px;}');
+  win.document.write('.cert h1{font-size:28px;color:#1d4ed8;margin-bottom:4px;}');
+  win.document.write('.cert .sub{font-size:12px;color:#64748b;letter-spacing:0.1em;margin-bottom:24px;}');
+  win.document.write('.cert .body{font-size:15px;line-height:2;color:#1e293b;}');
+  win.document.write('.cert .name{display:inline-block;border-bottom:2px solid #2563eb;min-width:120px;padding:4px 12px;margin:0 4px;}');
+  win.document.write('.cert .course{font-weight:700;color:#1d4ed8;margin:8px 0;}');
+  win.document.write('.cert .score{margin:20px 0;font-size:16px;font-weight:600;color:#10b981;}');
+  win.document.write('.cert .footer{display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-top:32px;border-top:1px solid #e2e8f0;padding-top:16px;}');
+  win.document.write('</style></head><body><div class="cert">');
+  win.document.write(cert.innerHTML.replace(/<button[^>]*>.*?<\/button>/g, ''));
+  win.document.write('</div></body></html>');
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+}
+
+// === Toast ===
+function showToast(msg, type) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+// === Sidebar Toggle ===
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// === Boot ===
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
