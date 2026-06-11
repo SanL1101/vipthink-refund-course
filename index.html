@@ -1445,19 +1445,19 @@ function submitFinalTask() {
       <div class="eval-dimensions" style="margin-top:20px;">
         <div class="eval-dim" style="border-color:${dim1Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
           <h4>📋 流程规范性</h4>
-          <div class="stars">${starEmojis[Math.floor(dim1Score / 20)]}</div>
+          <div class="stars">${starEmojis[Math.min(4, Math.floor(dim1Score / 20))]}</div>
           <p style="font-size:12px;color:var(--text-secondary);">${dim1Score}分</p>
           <div style="margin-top:8px;">${dims.map(d => `<span class="keyword-tag ${d.found ? 'found' : 'missing'}" style="font-size:11px;">${d.found ? '✓' : '✗'} ${d.name}</span>`).join(' ')}</div>
         </div>
         <div class="eval-dim" style="border-color:${dim2Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
           <h4>🎯 挽单说服力</h4>
-          <div class="stars">${starEmojis[Math.floor(dim2Score / 20)]}</div>
+          <div class="stars">${starEmojis[Math.min(4, Math.floor(dim2Score / 20))]}</div>
           <p style="font-size:12px;color:var(--text-secondary);">${dim2Score}分</p>
           <div style="margin-top:8px;">${dims2.map(d => `<span class="keyword-tag ${d.found ? 'found' : 'missing'}" style="font-size:11px;">${d.found ? '✓' : '✗'} ${d.name}</span>`).join(' ')}</div>
         </div>
         <div class="eval-dim" style="border-color:${dim3Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
           <h4>💬 表达流畅度</h4>
-          <div class="stars">${starEmojis[Math.floor(dim3Score / 20)]}</div>
+          <div class="stars">${starEmojis[Math.min(4, Math.floor(dim3Score / 20))]}</div>
           <p style="font-size:12px;color:var(--text-secondary);">${dim3Score}分</p>
           <div style="margin-top:8px;font-size:11px;color:var(--text-secondary);">${text.length}字 · ${text.includes('\n') || text.includes('\r\n') ? '已分段 ✓' : '建议分段'}</div>
         </div>
