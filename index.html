@@ -923,14 +923,14 @@ const quizzes = {
     isDialogue: true,
     question: '家长说："排课时间老是对不上，老师也换了好几个，感觉你们根本没有重视我家孩子，我要退费！"请运用预警挽单策略来回应：',
     expectedKeywords: [
-      { word: '理解', weight: 12 },
-      { word: '方案', weight: 10 },
-      { word: '对接', weight: 10 },
-      { word: '时间', weight: 8 },
-      { word: '老师', weight: 8 },
-      { word: '承诺', weight: 8 },
-      { word: '响应', weight: 8 },
-      { word: '跟进', weight: 9 }
+      { concept: '共情理解', terms: ['理解', '共情', '体谅', '感同身受', '换位思考', '心情', '感受', '站在您', '不容易', '着急'], weight: 12 },
+      { concept: '方案调整', terms: ['方案', '调整', '协调', '优化', '改进', '解决', '办法', '措施', '安排', '规划'], weight: 10 },
+      { concept: '对接沟通', terms: ['对接', '沟通', '联系', '商量', '确认', '协调', '反馈'], weight: 10 },
+      { concept: '时间排课', terms: ['时间', '排课', '档期', '课表', '时段'], weight: 8 },
+      { concept: '老师稳定', terms: ['老师', '教师', '师资', '教学', '授课'], weight: 8 },
+      { concept: '承诺保障', terms: ['承诺', '保证', '确保', '一定', '落实', '到位', '保障', '负责'], weight: 8 },
+      { concept: '快速响应', terms: ['响应', '回复', '随时', '马上', '立刻', '第一时间', '尽快', '及时'], weight: 8 },
+      { concept: '持续跟进', terms: ['跟进', '跟踪', '追踪', '持续', '主动', '后续'], weight: 9 }
     ],
     scenario: '一位家长因为排课时间冲突和教师频繁更换感到不满，情绪比较激动。'
   }
@@ -1099,9 +1099,9 @@ function submitDialogue() {
   const lowerText = text.toLowerCase();
   let totalScore = 0;
   const keywordResults = quiz.expectedKeywords.map(kw => {
-    const found = lowerText.includes(kw.word.toLowerCase());
+    const found = kw.terms.some(t => lowerText.includes(t.toLowerCase()));
     if (found) totalScore += kw.weight;
-    return { ...kw, found };
+    return { concept: kw.concept, weight: kw.weight, found };
   });
   if (text.length >= 60) totalScore += 5;
   if (text.length >= 120) totalScore += 5;
@@ -1109,22 +1109,22 @@ function submitDialogue() {
   quiz2Answered = true;
   let scoreLevel = quiz2Score >= 80 ? 'high' : quiz2Score >= 60 ? 'medium' : 'low';
   let feedbackMsg = '';
-  if (quiz2Score >= 80) feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#065f46;margin-bottom:8px;">🎉 优秀！你的回应体现了共情引导+具体方案的专业挽单策略。</p>';
-  else if (quiz2Score >= 60) feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#92400e;margin-bottom:8px;">👍 不错！还有提升空间，争取覆盖更多关键要素。</p>';
+  if (quiz2Score >= 80) feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#065f46;margin-bottom:8px;">🎉 优秀！你的回应覆盖了挽单沟通的核心要素。</p>';
+  else if (quiz2Score >= 60) feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#92400e;margin-bottom:8px;">👍 不错！还有提升空间，争取覆盖更多沟通维度。</p>';
   else feedbackMsg = '<p style="font-size:16px;font-weight:700;color:#991b1b;margin-bottom:8px;">📚 需要更多练习。建议回顾预警挽单章节后再试。</p>';
-  feedbackMsg += '<p style="font-size:13px;color:#64748b;margin-bottom:12px;">AI评估基于以下关键点检测：</p>';
+  feedbackMsg += '<p style="font-size:13px;color:#64748b;margin-bottom:12px;">语义评估基于以下维度检测（命中任一近义词即得分）：</p>';
   feedbackMsg += '<div class="keywords-result">';
   keywordResults.forEach(kr => {
-    feedbackMsg += '<span class="keyword-tag ' + (kr.found ? 'found' : 'missing') + '">' + (kr.found ? '✓' : '✗') + ' ' + kr.word + ' (' + kr.weight + '分)</span>';
+    feedbackMsg += '<span class="keyword-tag ' + (kr.found ? 'found' : 'missing') + '">' + (kr.found ? '✓' : '✗') + ' ' + kr.concept + ' (' + kr.weight + '分)</span>';
   });
   if (text.length >= 60) feedbackMsg += '<span class="keyword-tag found">✓ 回答长度充足 (+5分)</span>';
   if (text.length >= 120) feedbackMsg += '<span class="keyword-tag found">✓ 回答详尽 (+5分)</span>';
   feedbackMsg += '</div>';
   const missingKeywords = keywordResults.filter(k => !k.found);
   if (missingKeywords.length > 0) {
-    feedbackMsg += '<div style="margin-top:16px;padding:12px;background:#fef2f2;border-radius:8px;font-size:13px;color:#991b1b;"><strong>💡 优化建议：</strong>你的回答中缺少以下关键要素：<br>';
-    feedbackMsg += missingKeywords.map(k => '· <strong>' + k.word + '</strong>').join('<br>');
-    feedbackMsg += '<br>建议将这些要素融入回答中，使挽单沟通更专业有效。</div>';
+    feedbackMsg += '<div style="margin-top:16px;padding:12px;background:#fef2f2;border-radius:8px;font-size:13px;color:#991b1b;"><strong>💡 优化建议：</strong>你的回答中缺少以下沟通维度：<br>';
+    feedbackMsg += missingKeywords.map(k => '· <strong>' + k.concept + '</strong>').join('<br>');
+    feedbackMsg += '<br>尝试从这些角度补充内容，让挽单沟通更全面。</div>';
   }
   feedback.innerHTML = '<div class="score-display"><div class="score-circle ' + scoreLevel + '">' + quiz2Score + '</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">综合评分</div></div>' + feedbackMsg + (quiz2Score >= 80 ? '<div style="margin-top:12px;padding:12px;background:#ecfdf5;border-radius:8px;font-size:13px;color:#065f46;"><strong>✅ 练习通过！</strong>评分达到80分以上。</div>' : '');
   feedback.classList.add('show');
