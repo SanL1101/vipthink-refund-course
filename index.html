@@ -1212,18 +1212,76 @@ function submitFinalTask() {
   if (!text) { showToast('请先输入你的挽单话术', 'info'); return; }
   finalTaskSubmitted = true;
 
-  const hasJudge = /判断|5节|试学期|LP|主导/.test(text);
-  const hasEmpathy = /共情|理解|感受|情绪/.test(text);
-  const hasStrategy = /体验课|案例|效果|方案|调整|安排/.test(text);
-  const hasCompliance = /合规|记录|OA|48|底线/.test(text);
+  const dims = [
+    {
+      name: '场景判断',
+      terms: ['判断', '5节', '试学期', '课时', '已上', 'LP', '规划师', '主导', '负责', '跟进', '入学', '阶段', '超出', '试学', '正式课'],
+      weight: 25, found: false
+    },
+    {
+      name: '共情理解',
+      terms: ['理解', '共情', '感受', '体谅', '心情', '着急', '换位思考', '感同身受', '站在您', '不容易', '重视', '想法', '明白', '知道'],
+      weight: 25, found: false
+    },
+    {
+      name: '解决方案',
+      terms: ['方案', '调整', '体验课', '案例', '效果', '安排', '规划', '改进', '优化', '办法', '措施', '针对', '专门', '量身', '梳理', '设计'],
+      weight: 25, found: false
+    },
+    {
+      name: '合规底线',
+      terms: ['合规', '记录', 'OA', '48', '底线', '规定', '流程', '留痕', '报备', '审批', '制度', '按流程'],
+      weight: 25, found: false
+    }
+  ];
 
+  dims.forEach(d => {
+    d.found = d.terms.some(t => text.includes(t));
+  });
   let dim1Score = 0;
-  if (hasJudge) dim1Score += 25;
-  if (hasEmpathy) dim1Score += 25;
-  if (hasStrategy) dim1Score += 25;
-  if (hasCompliance) dim1Score += 25;
-  const dim2Score = Math.min(100, text.length >= 80 ? 25 : 10 + (text.includes('我们') ? 15 : 0) + (text.includes('孩子') ? 10 : 0) + 25 + 25);
-  const dim3Score = Math.min(100, text.length >= 100 ? 40 + Math.min(60, Math.floor(text.length / 3)) : Math.min(40, Math.floor(text.length / 2)));
+  dims.forEach(d => { if (d.found) dim1Score += d.weight; });
+
+  // 维度二：挽单说服力
+  const dims2 = [
+    {
+      name: '具体行动',
+      terms: ['安排', '体验', '展示', '整理', '评估', '推进', '落实', '对接', '沟通', '协调', '确认', '帮您', '为您'],
+      weight: 30, found: false
+    },
+    {
+      name: '正面引导',
+      terms: ['我们', '孩子', '成长', '进步', '相信', '信心', '机会', '积累', '潜力', '空间', '努力', '收获'],
+      weight: 30, found: false
+    },
+    {
+      name: '案例支撑',
+      terms: ['案例', '学员', '类似', '同年龄', '其他孩子', '之前', '也有', '经验', '参考', '例子', '同样'],
+      weight: 20, found: false
+    },
+    {
+      name: '闭环承诺',
+      terms: ['反馈', '同步', '通知', '回复', '联系', '消息', '进展', '第一时间', '随时', '主动', '马上'],
+      weight: 20, found: false
+    }
+  ];
+
+  dims2.forEach(d => {
+    d.found = d.terms.some(t => text.includes(t));
+  });
+  let dim2Score = 0;
+  dims2.forEach(d => { if (d.found) dim2Score += d.weight; });
+  // 字数加成
+  if (text.length >= 200) dim2Score = Math.min(100, dim2Score + 10);
+  else if (text.length >= 100) dim2Score = Math.min(100, dim2Score + 5);
+
+  // 维度三：表达流畅度
+  let dim3Score = 25;
+  if (text.length >= 60) dim3Score = 45;
+  if (text.length >= 100) dim3Score = 65;
+  if (text.length >= 150) dim3Score = 85;
+  if (text.length >= 200) dim3Score = 100;
+  // 有换行分段则加分
+  if (text.includes('\n') || text.includes('\r\n')) dim3Score = Math.min(100, dim3Score + 10);
 
   const totalScore = Math.round((dim1Score + dim2Score + dim3Score) / 3);
   finalScore = totalScore;
@@ -1248,19 +1306,28 @@ function submitFinalTask() {
           <h4>📋 流程规范性</h4>
           <div class="stars">${starEmojis[Math.floor(dim1Score / 20)]}</div>
           <p style="font-size:12px;color:var(--text-secondary);">${dim1Score}分</p>
+          <div style="margin-top:8px;">${dims.map(d => `<span class="keyword-tag ${d.found ? 'found' : 'missing'}" style="font-size:11px;">${d.found ? '✓' : '✗'} ${d.name}</span>`).join(' ')}</div>
         </div>
         <div class="eval-dim" style="border-color:${dim2Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
           <h4>🎯 挽单说服力</h4>
           <div class="stars">${starEmojis[Math.floor(dim2Score / 20)]}</div>
           <p style="font-size:12px;color:var(--text-secondary);">${dim2Score}分</p>
+          <div style="margin-top:8px;">${dims2.map(d => `<span class="keyword-tag ${d.found ? 'found' : 'missing'}" style="font-size:11px;">${d.found ? '✓' : '✗'} ${d.name}</span>`).join(' ')}</div>
         </div>
         <div class="eval-dim" style="border-color:${dim3Score >= 70 ? 'var(--success)' : 'var(--danger)'}">
           <h4>💬 表达流畅度</h4>
           <div class="stars">${starEmojis[Math.floor(dim3Score / 20)]}</div>
           <p style="font-size:12px;color:var(--text-secondary);">${dim3Score}分</p>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-secondary);">${text.length}字 · ${text.includes('\n') || text.includes('\r\n') ? '已分段 ✓' : '建议分段'}</div>
         </div>
       </div>
       <div style="margin-top:16px;padding:16px;background:${totalScore >= 80 ? '#ecfdf5' : totalScore >= 60 ? '#fffbeb' : '#fef2f2'};border-radius:8px;font-size:14px;">${verdict}</div>
+      ${totalScore < 60 ? `<div style="margin-top:12px;padding:12px;background:#fef2f2;border-radius:8px;font-size:13px;color:#991b1b;">
+        <strong>💡 优化方向：</strong><br>${(() => {
+          const missed = [...dims.filter(d => !d.found).map(d => '· <strong>' + d.name + '</strong>（流程规范性）'), ...dims2.filter(d => !d.found).map(d => '· <strong>' + d.name + '</strong>（挽单说服力）')];
+          return missed.join('<br>') || '· 请丰富内容长度，尝试使用结构化分段表达';
+        })()}
+      </div>` : ''}
     </div>
   `;
 
