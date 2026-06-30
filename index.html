@@ -471,7 +471,8 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
 .cert-body { font-size: 15px; line-height: 2; color: var(--text); }
 .cert-name { display: inline-block; border-bottom: 2px solid var(--primary); min-width: 120px; padding: 4px 12px; margin: 0 4px; }
 .cert-course { font-weight: 700; color: var(--primary-dark); margin: 8px 0; }
-.cert-score { margin: 20px 0; font-size: 16px; font-weight: 600; color: var(--success); }
+.cert-score { margin: 20px 0 8px; font-size: 16px; font-weight: 600; color: var(--success); }
+.cert-final-score { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: var(--primary); }
 .cert-footer {
   display: flex; justify-content: space-between;
   font-size: 12px; color: var(--text-secondary); margin-top: 32px;
@@ -723,6 +724,7 @@ video { width: 100%; border-radius: var(--radius-sm); background: #000; }
       课程内容：掌握退费处理核心规则、预警挽单策略、计算风控要点及三阶实战工作法
     </div>
     <div class="cert-score" id="certScore">综合评定：通过</div>
+    <div class="cert-final-score" id="certFinalScore">终极考核得分：-- 分</div>
     <div class="cert-footer">
       <span id="certDate"></span>
       <span>VIPTHINK · CC/LP 培训体系</span>
@@ -1559,12 +1561,13 @@ function loadProgress() {
 
 // === Certificate ===
 function checkCertificate() {
-  const allDone = completedSections.size >= courseData.sections.length && quiz1Answered && quiz2Answered && finalTaskSubmitted && finalScore >= 60;
+  const allDone = completedSections.size >= courseData.sections.length && quiz1Answered && quiz2Answered && quiz2Score >= 60 && finalTaskSubmitted && finalScore >= 60;
   if (allDone) {
     setTimeout(() => {
       showToast('🏆 恭喜完成全部课程！点击领取结业证书', 'success');
       document.getElementById('certStudentName').textContent = '请填写姓名';
-      document.getElementById('certScore').textContent = '综合评定：通过';
+      document.getElementById('certScore').textContent = '综合评定：通过 · 对话练习 ' + quiz2Score + '分';
+      document.getElementById('certFinalScore').textContent = '终极考核得分：' + finalScore + ' 分';
       document.getElementById('certDate').textContent = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
       document.getElementById('certOverlay').style.display = 'flex';
     }, 1000);
@@ -1586,7 +1589,8 @@ function printCertificate() {
   win.document.write('.cert .body{font-size:15px;line-height:2;color:#1e293b;}');
   win.document.write('.cert .name{display:inline-block;border-bottom:2px solid #2563eb;min-width:120px;padding:4px 12px;margin:0 4px;}');
   win.document.write('.cert .course{font-weight:700;color:#1d4ed8;margin:8px 0;}');
-  win.document.write('.cert .score{margin:20px 0;font-size:16px;font-weight:600;color:#10b981;}');
+  win.document.write('.cert .score{margin:20px 0 8px;font-size:16px;font-weight:600;color:#10b981;}');
+  win.document.write('.cert .final-score{margin:0 0 12px;font-size:14px;font-weight:600;color:#2563eb;}');
   win.document.write('.cert .footer{display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-top:32px;border-top:1px solid #e2e8f0;padding-top:16px;}');
   win.document.write('</style></head><body><div class="cert">');
   win.document.write(cert.innerHTML.replace(/<button[^>]*>.*?<\/button>/g, ''));
